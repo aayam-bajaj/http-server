@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crowd Monitoring Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f3f4f6;
+      }
+      .gradient-header {
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      }
+      .stat-card {
+        transition: transform 0.2s;
+      }
+      .stat-card:hover {
+        transform: translateY(-2px);
+      }
+      .chart-container {
+        position: relative;
+        height: 300px;
+      }
+      .pulse-dot {
+        position: relative;
+      }
+      .pulse-dot::before {
+        content: "";
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background-color: #10b981;
+        border-radius: 50%;
+        left: -16px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      .pulse-dot::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        background-color: #10b981;
+        border-radius: 50%;
+        left: -20px;
+        top: 50%;
+        transform: translateY(-50%);
+        animation: pulse 2s infinite;
+        opacity: 0.5;
+      }
+      @keyframes pulse {
+        0% {
+          transform: translateY(-50%) scale(0.8);
+          opacity: 0.5;
+        }
+        70% {
+          transform: translateY(-50%) scale(1.3);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(-50%) scale(0.8);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="min-h-screen">
+      <!-- Header -->
+      <header class="gradient-header shadow-lg">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-3xl font-bold text-white">
+                Crowd Monitoring Dashboard
+              </h1>
+              <p class="mt-2 text-blue-100">
+                Real-time crowd analytics and monitoring
+              </p>
+            </div>
+            <div class="pulse-dot pl-6 text-white">Live Updates</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+          <div
+            class="stat-card bg-white overflow-hidden shadow-lg rounded-xl border border-gray-100"
+          >
+            <div class="px-6 py-8">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 bg-blue-500 rounded-lg p-3">
+                  <svg
+                    class="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                </div>
+                <div class="ml-5">
+                  <dt class="text-sm font-medium text-gray-500 truncate">
+                    Total People
+                  </dt>
+                  <dd
+                    class="mt-1 text-3xl font-semibold text-gray-900"
+                    id="totalPeople"
+                  >
+                    0
+                  </dd>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="stat-card bg-white overflow-hidden shadow-lg rounded-xl border border-gray-100"
+          >
+            <div class="px-6 py-8">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 bg-green-500 rounded-lg p-3">
+                  <svg
+                    class="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
+                </div>
+                <div class="ml-5">
+                  <dt class="text-sm font-medium text-gray-500 truncate">
+                    Average Density
+                  </dt>
+                  <dd
+                    class="mt-1 text-3xl font-semibold text-gray-900"
+                    id="avgDensity"
+                  >
+                    0
+                  </dd>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="stat-card bg-white overflow-hidden shadow-lg rounded-xl border border-gray-100"
+          >
+            <div class="px-6 py-8">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 bg-purple-500 rounded-lg p-3">
+                  <svg
+                    class="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </div>
+                <div class="ml-5">
+                  <dt class="text-sm font-medium text-gray-500 truncate">
+                    Active Locations
+                  </dt>
+                  <dd
+                    class="mt-1 text-3xl font-semibold text-gray-900"
+                    id="activeLocations"
+                  >
+                    0
+                  </dd>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div class="bg-white shadow-lg rounded-xl border border-gray-100 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">
+              People Count Over Time
+            </h2>
+            <div class="chart-container">
+              <canvas id="peopleCountChart"></canvas>
+            </div>
+          </div>
+          <div class="bg-white shadow-lg rounded-xl border border-gray-100 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">
+              Density by Location
+            </h2>
+            <div class="chart-container">
+              <canvas id="densityChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Events Table -->
+        <div
+          class="bg-white shadow-lg rounded-xl border border-gray-100 overflow-hidden"
+        >
+          <div class="px-6 py-5">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-semibold text-gray-900">Recent Events</h2>
+              <span
+                class="px-3 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full"
+                >Live Updates</span
+              >
+            </div>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th
+                      class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg"
+                    >
+                      Time
+                    </th>
+                    <th
+                      class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Location
+                    </th>
+                    <th
+                      class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      People Count
+                    </th>
+                    <th
+                      class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg"
+                    >
+                      Density
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="eventsTable"
+                  class="bg-white divide-y divide-gray-200"
+                ></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Initialize charts with custom styles
+      Chart.defaults.font.family = "'Inter', sans-serif";
+      Chart.defaults.color = "#6B7280";
+
+      const peopleCountCtx = document
+        .getElementById("peopleCountChart")
+        .getContext("2d");
+      const densityCtx = document
+        .getElementById("densityChart")
+        .getContext("2d");
+
+      // People Count Chart
+      const peopleCountChart = new Chart(peopleCountCtx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "People Count",
+              data: [],
+              borderColor: "#3B82F6",
+              backgroundColor: "rgba(59, 130, 246, 0.1)",
+              borderWidth: 2,
+              tension: 0.4,
+              fill: true,
+            },
+          ],
+        },
+        options: getChartOptions("People Count Over Time"),
+      });
+
+      // Density Chart
+      const densityChart = new Chart(densityCtx, {
+        type: "bar",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "Density",
+              data: [],
+              backgroundColor: "rgba(59, 130, 246, 0.8)",
+              borderRadius: 4,
+            },
+          ],
+        },
+        options: getChartOptions("Density by Location"),
+      });
+
+      // Common chart options
+      function getChartOptions(title) {
+        return {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+            },
+            title: {
+              display: true,
+              text: title,
+              font: {
+                size: 16,
+              },
+              padding: {
+                top: 10,
+                bottom: 20,
+              },
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: "rgba(107, 114, 128, 0.1)",
+              },
+            },
+            x: {
+              grid: {
+                display: false,
+              },
+            },
+          },
+        };
+      }
+
+      // WebSocket connection for real-time updates
+      const socket = new WebSocket(`ws://${window.location.host}/ws`);
+
+      socket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        updateDashboard();
+      };
+
+      // Fetch and update data
+      async function updateDashboard() {
+        try {
+          const [eventsResponse, statsResponse] = await Promise.all([
+            fetch("/api/events"),
+            fetch("/api/stats"),
+          ]);
+
+          const events = await eventsResponse.json();
+          const stats = await statsResponse.json();
+
+          // Update stats with animation
+          animateValue(
+            "totalPeople",
+            parseInt(document.getElementById("totalPeople").textContent),
+            stats.total_people,
+            1000
+          );
+          animateValue(
+            "avgDensity",
+            parseFloat(document.getElementById("avgDensity").textContent),
+            stats.avg_density,
+            1000
+          );
+          animateValue(
+            "activeLocations",
+            parseInt(document.getElementById("activeLocations").textContent),
+            stats.active_locations,
+            1000
+          );
+
+          // Update charts
+          updatePeopleCountChart(events);
+          updateDensityChart(events);
+
+          // Update table
+          updateEventsTable(events);
+        } catch (error) {
+          console.error("Error updating dashboard:", error);
+        }
+      }
+
+      function updatePeopleCountChart(events) {
+        const timeFormat = new Intl.DateTimeFormat("en-US", {
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+        });
+
+        peopleCountChart.data.labels = events
+          .slice(0, 20) // Show last 20 events
+          .reverse()
+          .map((event) => timeFormat.format(new Date(event.timestamp)));
+
+        peopleCountChart.data.datasets[0].data = events
+          .slice(0, 20)
+          .reverse()
+          .map((event) => event.people_count);
+
+        peopleCountChart.update();
+      }
+
+      function updateDensityChart(events) {
+        const locations = Array.from(
+          new Set(events.map((event) => event.location))
+        );
+        const densityData = locations.map((location) => {
+          const locationEvents = events.filter(
+            (event) => event.location === location
+          );
+          return {
+            location,
+            density:
+              locationEvents.reduce((sum, event) => sum + event.density, 0) /
+              locationEvents.length,
+          };
+        });
+
+        densityChart.data.labels = densityData.map((d) => d.location);
+        densityChart.data.datasets[0].data = densityData.map((d) => d.density);
+        densityChart.update();
+      }
+
+      function updateEventsTable(events) {
+        const tableBody = document.getElementById("eventsTable");
+        const newRows = events
+          .slice(0, 10)
+          .map(
+            (event) => `
+        <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(
+              event.timestamp
+            ).toLocaleString()}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${
+              event.location
+            }</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
+              event.people_count
+            }</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <div class="flex items-center">
+                    <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                        <div class="bg-blue-500 rounded-full h-2" style="width: ${Math.min(
+                          event.density * 100,
+                          100
+                        )}%"></div>
+                    </div>
+                    ${event.density.toFixed(2)}
+                </div>
+            </td>
+        </tr>
+    `
+          )
+          .join("");
+
+        tableBody.innerHTML = newRows;
+      }
+
+      // Animate number changes
+      function animateValue(id, start, end, duration) {
+        const obj = document.getElementById(id);
+        const range = end - start;
+        const minTimer = 50;
+        const stepTime = Math.abs(Math.floor(duration / range));
+        const startTime = new Date().getTime();
+        const endTime = startTime + duration;
+        let timer;
+
+        function run() {
+          const now = new Date().getTime();
+          const remaining = Math.max((endTime - now) / duration, 0);
+          const value = Math.round(end - remaining * range);
+          obj.textContent =
+            typeof end === "number" && end % 1 !== 0 ? value.toFixed(2) : value;
+          if (value === end) {
+            clearInterval(timer);
+          }
+        }
+
+        timer = setInterval(run, stepTime);
+        run();
+      }
+
+      
+      const eventSource = new EventSource("/sse/stream");
+
+      eventSource.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        if (data.type === "crowd_data") {
+          updateDashboard();
+        }
+      };
+
+      eventSource.onerror = function () {
+        console.error("EventSource failed");
+        // Implement reconnection logic here
+      };
+
+      // Initial load
+      updateDashboard();
+
+      // Update dashboard every 5 seconds
+      setInterval(updateDashboard, 5000);
+    </script>
+  </body>
+</html>

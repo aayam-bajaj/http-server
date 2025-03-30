@@ -1,5 +1,5 @@
-from app import create_app
-from app.models import CrowdData
+from server.app import create_app
+from server.models import CrowdData
 from datetime import datetime, timedelta
 import random
 
