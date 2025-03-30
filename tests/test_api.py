@@ -1,6 +1,6 @@
 import pytest
 from app import app
-from models import CrowdData
+from app.models import CrowdData
 import json
 
 @pytest.fixture
