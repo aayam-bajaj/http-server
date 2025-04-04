@@ -511,25 +511,25 @@
       }
 
       
-      const eventSource = new EventSource("/sse/stream");
+   // Replace your existing SSE code with:
+const eventSource = new EventSource('/sse/stream');
 
-      eventSource.onmessage = function (event) {
-        const data = JSON.parse(event.data);
-        if (data.type === "crowd_data") {
-          updateDashboard();
-        }
-      };
+eventSource.addEventListener('crowd_data', (e) => {
+    const data = JSON.parse(e.data);
+    
+    // Update UI elements
+    document.getElementById('people-count').innerText = data.yolo_count;
+    document.getElementById('last-update').innerText = new Date().toLocaleTimeString();
+    
+    // Update charts
+    updatePeopleChart(data.yolo_count);
+});
 
-      eventSource.onerror = function () {
-        console.error("EventSource failed");
-        // Implement reconnection logic here
-      };
-
-      // Initial load
-      updateDashboard();
-
-      // Update dashboard every 5 seconds
-      setInterval(updateDashboard, 5000);
+// Add error handling
+eventSource.onerror = () => {
+    console.error("SSE connection error");
+    setTimeout(() => location.reload(), 5000);  // Reconnect after 5s
+};
     </script>
   </body>
 </html>

@@ -4,6 +4,7 @@ from pymongo import IndexModel, ASCENDING, DESCENDING
 class CrowdData:
     def __init__(self, db):
         self.collection = db['crowd_data']
+        self.analytics_collection = db['analytics'] 
         self._create_indexes()
     
     def _create_indexes(self):
@@ -12,6 +13,14 @@ class CrowdData:
             IndexModel([('device_id', ASCENDING)]),
             IndexModel([('location', ASCENDING)])]
         self.collection.create_indexes(indexes)
+
+     # NEW analytics indexes
+        analytics_indexes = [
+            IndexModel([('timestamp', DESCENDING)]),
+            IndexModel([('edge_data.device_id', ASCENDING)]),
+            IndexModel([('anomalies', ASCENDING)])
+        ]
+        self.analytics_collection.create_indexes(analytics_indexes)
     
     def insert_data(self, data):
         """Insert crowd data with timestamp"""
@@ -42,3 +51,9 @@ class CrowdData:
             'avg_density': 0,
             'active_locations': 0
         }
+    
+    # NEW method for advanced analytics
+    def insert_analytics(self, data):
+        """Insert YOLO/DeepSort processed data"""
+        data['processed_at'] = datetime.now()
+        return self.analytics_collection.insert_one(data)

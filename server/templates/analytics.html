@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Analytics</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div id="heatmap" style="width:800px;height:600px;"></div>
+    <div id="anomalies"></div>
+    
+    <script>
+    const eventSource = new EventSource('/sse/stream');
+    eventSource.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        if (data.type === 'advanced_analytics') {
+            // Update heatmap
+            Plotly.newPlot('heatmap', [{
+                z: data.heatmap,
+                type: 'heatmap'
+            }]);
+            
+            // Show anomalies
+            document.getElementById('anomalies').innerHTML = 
+                data.anomalies.map(a => `<div class="alert">${a}</div>`).join('');
+        }
+    };
+    </script>
+</body>
+</html>

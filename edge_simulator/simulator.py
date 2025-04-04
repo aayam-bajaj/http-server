@@ -22,32 +22,33 @@ class EdgeDeviceSimulator:
         }
     
     def send_data(self):
-        """Send data to server with compression"""
         data = self.generate_data()
-        
         try:
-            # Compress the data
-            compressed = zlib.compress(json.dumps(data).encode())
+            # Ensure proper encoding
+            json_data = json.dumps(data).encode('utf-8')
+            compressed = zlib.compress(json_data)
             
-            # Send to server
             response = requests.post(
-                f"{self.server_url}/api/receive_data",
+                f"{self.server_url}/api/advanced_analysis",
                 data=compressed,
                 headers={
                     "Content-Type": "application/json",
                     "Content-Encoding": "gzip",
-                    "X-Device-ID": self.device_id
+                    "X-Device-ID": self.device_id,
+                    "Connection": "keep-alive"  # Prevent resets
                 },
-                timeout=2
+                timeout=10
             )
             
-            print(f"Data sent - Status: {response.status_code}, Count: {data['count']}")
+            if response.status_code != 200:
+                print(f"Error {response.status_code}: {response.text}")
             return response.status_code == 200
-        
-        except Exception as e:
-            print(f"Failed to send data: {e}")
+            
+        except requests.exceptions.ConnectionError as e:
+            print(f"Connection failed: {str(e)}")
+            time.sleep(5)  # Wait before retry
             return False
-    
+        
     def run(self, interval=5):
         """Run continuous simulation"""
         print(f"Starting edge device simulator (ID: {self.device_id})")
