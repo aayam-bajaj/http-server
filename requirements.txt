@@ -6,3 +6,25 @@ opencv-python-headless
 ultralytics>=8.0.0
 deep-sort-realtime>=1.3.0
 plotly>=5.0.0
+
+
+# requirements.txt
+flask==3.0.2
+flask-cors==4.0.0
+pymongo==4.6.1
+opencv-python==4.9.0.80
+numpy==1.26.4
+ultralytics==8.1.0  # For YOLOv8
+python-dotenv==1.0.1  # For environment variables
+zlib==1.0  # Built-in but ensure available
+requests==2.31.0  # For health checks
+gunicorn==21.2.0  # Optional for production
+eventlet==0.33.3  # For better SSE handling
+
+
+
+
+# to run the code , first run python server/app.py which will open the frontende then for testing a) run python edge_simulator/simulator.py and for b) rela time start the edge code which will be on same network
+
+
+#ensure mongodbcompass is installed 

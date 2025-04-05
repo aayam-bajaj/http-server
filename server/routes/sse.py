@@ -1,40 +1,52 @@
-from flask import Blueprint, Response, jsonify
+import queue
+from flask import Blueprint, Response
 import json
-import time
 from datetime import datetime
+from threading import Lock
+import time
 
 sse_blueprint = Blueprint('sse', __name__)
 
-# Simple in-memory event store (replace with Redis in production)
-event_store = []
+class MessageAnnouncer:
+    def __init__(self):
+        self.listeners = []
+        self.lock = Lock()
+    
+    def listen(self):
+        with self.lock:
+            self.listeners.append(queue.Queue(maxsize=5))
+            return self.listeners[-1]
+    
+    def announce(self, msg):
+        with self.lock:
+            for i in reversed(range(len(self.listeners))):
+                try:
+                    self.listeners[i].put_nowait(msg)
+                except queue.Full:
+                    del self.listeners[i]
 
-def event_stream():
-    """Generator function for SSE"""
-    last_id = 0
-    while True:
-        # Check for new events
-        new_events = [e for e in event_store if e['id'] > last_id]
-        for event in new_events:
-            last_id = event['id']
-            yield f"data: {json.dumps(event['data'])}\n\n"
-        time.sleep(1)
+announcer = MessageAnnouncer()
+
+def format_sse(data: dict) -> str:
+    """Ensure all datetime objects are converted"""
+    def json_serializer(obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        raise TypeError(f"Type {type(obj)} not serializable")
+    
+    return f"data: {json.dumps(data, default=json_serializer)}\n\n"
 
 @sse_blueprint.route('/stream')
 def stream():
-    """SSE endpoint for dashboard"""
-    return Response(
-        event_stream(),
-        mimetype="text/event-stream",
-        headers={
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive'
-        }
-    )
+    def event_stream():
+        q = announcer.listen()
+        while True:
+            msg = q.get()
+            yield msg
+    
+    return Response(event_stream(), mimetype='text/event-stream')
 
-def add_event(data):
-    """Add new event to the store"""
-    event_store.append({
-        'id': len(event_store) + 1,
-        'data': data,
-        'timestamp': datetime.now().isoformat()
-    })
+def broadcast_event(event_type, data):
+    """Helper to broadcast events to all SSE clients"""
+    msg = format_sse(data=json.dumps(data), event=event_type)
+    announcer.announce(msg)

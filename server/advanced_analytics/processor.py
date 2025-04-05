@@ -49,6 +49,17 @@ from . import yolo
 def process_advanced_analytics(data):
     """Simplified YOLO-only processing"""
     try:
+
+            # Convert timestamp if needed
+        if isinstance(data.get('timestamp'), str):
+            timestamp = data['timestamp']
+        else:
+            timestamp = datetime.utcnow().isoformat()
+        
+        return {
+            "timestamp": timestamp,  # Ensure string format
+            # ... other fields ...
+        }
         # Decode frame
         img_bytes = base64.b64decode(data["full_frame"])
         frame = cv2.imdecode(np.frombuffer(img_bytes, dtype=np.uint8), cv2.IMREAD_COLOR)

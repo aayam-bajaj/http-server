@@ -359,13 +359,13 @@
         };
       }
 
-      // WebSocket connection for real-time updates
-      const socket = new WebSocket(`ws://${window.location.host}/ws`);
+      // Remove any WebSocket code and use only SSE
+const eventSource = new EventSource('/sse/stream');
 
-      socket.onmessage = function (event) {
-        const data = JSON.parse(event.data);
-        updateDashboard();
-      };
+eventSource.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    updateDashboard(data);
+};
 
       // Fetch and update data
       async function updateDashboard() {
@@ -511,25 +511,34 @@
       }
 
       
-   // Replace your existing SSE code with:
+  
 const eventSource = new EventSource('/sse/stream');
 
-eventSource.addEventListener('crowd_data', (e) => {
+eventSource.addEventListener('crowd_update', (e) => {
     const data = JSON.parse(e.data);
-    
-    // Update UI elements
-    document.getElementById('people-count').innerText = data.yolo_count;
-    document.getElementById('last-update').innerText = new Date().toLocaleTimeString();
-    
-    // Update charts
-    updatePeopleChart(data.yolo_count);
+    updateDashboard(data.data);
 });
 
-// Add error handling
-eventSource.onerror = () => {
-    console.error("SSE connection error");
-    setTimeout(() => location.reload(), 5000);  // Reconnect after 5s
+eventSource.addEventListener('analytics_update', (e) => {
+    const data = JSON.parse(e.data);
+    updateAdvancedAnalytics(data.data);
+});
+
+eventSource.onerror = (e) => {
+    console.error("SSE Error:", e);
+    setTimeout(() => location.reload(), 5000);
 };
+
+async function updateDashboard(data) {
+    // Update your UI elements directly with the received data
+    document.getElementById('totalPeople').textContent = data.count;
+    document.getElementById('avgDensity').textContent = data.density.toFixed(2);
+    
+    // Update charts and tables
+    updatePeopleCountChart([data]);
+    updateDensityChart([data]);
+    updateEventsTable([data]);
+}
     </script>
   </body>
 </html>
